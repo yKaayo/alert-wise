@@ -181,7 +181,9 @@ export function Avatar(props) {
             set({
               [target]: value,
             });
-          } catch (e) {}
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
     });

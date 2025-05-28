@@ -11,6 +11,7 @@ import { Avatar } from "./Avatar";
 const Dots = (props) => {
   const { loading } = useChat();
   const [loadingText, setLoadingText] = useState("");
+
   useEffect(() => {
     if (loading) {
       const interval = setInterval(() => {
@@ -26,7 +27,9 @@ const Dots = (props) => {
       setLoadingText("");
     }
   }, [loading]);
+
   if (!loading) return null;
+
   return (
     <group {...props}>
       <Text fontSize={0.14} anchorX={"left"} anchorY={"bottom"}>
@@ -52,14 +55,17 @@ export const Experience = () => {
       cameraControls.current.setLookAt(0, 2.2, 5, 0, 1.0, 0, true);
     }
   }, [cameraZoomed]);
+
   return (
     <>
-      <CameraControls ref={cameraControls} />
+      <CameraControls ref={cameraControls} enabled={false} />
       <Environment preset="sunset" />
       <Suspense>
         <Dots position-y={1.75} position-x={-0.02} />
       </Suspense>
-      <Avatar />
+      <group position={[0, -0.9, 0]} scale={[.6, .6, .6]}>
+        <Avatar />
+      </group>
       <ContactShadows opacity={0.7} />
     </>
   );
