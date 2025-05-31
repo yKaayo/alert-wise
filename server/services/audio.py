@@ -18,6 +18,8 @@ def elevenlabs_text_to_speech(api_key, voice_id, file_name, text_input):
         }
     }
     response = requests.post(url, headers=headers, json=payload)
+    print(response)
+    
     if response.status_code != 200 or response.headers.get("Content-Type") != "audio/mpeg":
         raise Exception(f"ElevenLabs API error: {response.text}")
     with open(file_name, "wb") as f:

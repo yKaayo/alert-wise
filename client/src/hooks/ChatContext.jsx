@@ -19,16 +19,11 @@ export const ChatProvider = ({ children }) => {
     }
 
     const json = await data.json();
-    console.log(json);
 
     const res = json.messages;
-    if (!Array.isArray(res)) {
-      console.error("Response messages is not an array", res);
-      setLoading(false);
-      return;
-    }
 
     setMessages((messages) => [...messages, ...res]);
+    
     setLoading(false);
   };
 

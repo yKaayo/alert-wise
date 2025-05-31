@@ -62,6 +62,7 @@ async def chat(req: ChatRequest):
                     raise Exception(f"Arquivo {file_name} não encontrado após geração.")
 
                 message["audio"] = await audio_file_to_base64(file_name)
+                print(message["audio"])
 
                 if message["audio"] is None:
                     print(f"[ERROR] Falha ao gerar Base64 de {file_name}")

@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.2.3 public/models/64f1a714fe61576b46f27ca2.glb -o src/com
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
@@ -108,7 +108,7 @@ let setupMode = false;
 
 export function Avatar(props) {
   const { nodes, materials, scene } = useGLTF(
-    "/models/64f1a714fe61576b46f27ca2.glb"
+    "/models/64f1a714fe61576b46f27ca2.glb",
   );
 
   const { message, onMessagePlayed, chat } = useChat();
@@ -116,7 +116,6 @@ export function Avatar(props) {
   const [lipsync, setLipsync] = useState();
 
   useEffect(() => {
-    console.log(message);
     if (!message) {
       const idleAnim = animations.find((a) => a.name === "Idle");
       setAnimation(idleAnim ? "Idle" : animations[0]?.name || "");
@@ -124,7 +123,7 @@ export function Avatar(props) {
     }
 
     const isValidAnimation = animations.some(
-      (a) => a.name === message.animation
+      (a) => a.name === message.animation,
     );
     if (isValidAnimation) {
       setAnimation(message.animation);
@@ -138,12 +137,18 @@ export function Avatar(props) {
     audio.onended = onMessagePlayed;
   }, [message]);
 
+  useEffect(() => {
+    if (materials.Wolf3D_Hair) {
+      materials.Wolf3D_Hair.color.set("#27276d");
+    }
+  }, [materials.Wolf3D_Hair]);
+
   const { animations } = useGLTF("/models/animations.glb");
 
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
   const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === "Idle") ? "Idle" : animations[0].name
+    animations.find((a) => a.name === "Idle") ? "Idle" : animations[0].name,
   );
   useEffect(() => {
     if (!actions[animation]) return;
@@ -173,7 +178,7 @@ export function Avatar(props) {
         child.morphTargetInfluences[index] = THREE.MathUtils.lerp(
           child.morphTargetInfluences[index],
           value,
-          speed
+          speed,
         );
 
         if (!setupMode) {
@@ -181,9 +186,7 @@ export function Avatar(props) {
             set({
               [target]: value,
             });
-          } catch (e) {
-            console.error(e);
-          }
+          } catch (e) {}
         }
       }
     });
@@ -280,7 +283,6 @@ export function Avatar(props) {
           emotionValues[key] = value;
         }
       });
-      console.log(JSON.stringify(emotionValues, null, 2));
     }),
   });
 
@@ -303,20 +305,23 @@ export function Avatar(props) {
             },
           },
         };
-      })
-    )
+      }),
+    ),
   );
 
   useEffect(() => {
     let blinkTimeout;
     const nextBlink = () => {
-      blinkTimeout = setTimeout(() => {
-        setBlink(true);
-        setTimeout(() => {
-          setBlink(false);
-          nextBlink();
-        }, 200);
-      }, THREE.MathUtils.randInt(1000, 5000));
+      blinkTimeout = setTimeout(
+        () => {
+          setBlink(true);
+          setTimeout(() => {
+            setBlink(false);
+            nextBlink();
+          }, 200);
+        },
+        THREE.MathUtils.randInt(1000, 5000),
+      );
     };
     nextBlink();
     return () => clearTimeout(blinkTimeout);

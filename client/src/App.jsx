@@ -1,7 +1,6 @@
 import { Loader } from "@react-three/drei";
 import { Leva } from "leva";
 import Home from "./layout/Home";
-import Pao from "./layout/Pao";
 
 const App = () => {
   return (
@@ -9,7 +8,6 @@ const App = () => {
       <Loader />
       <Leva hidden />
       <Home />
-      <Pao />
     </>
   );
 };

@@ -1,9 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #27276D;
+  --color-primary: #27276d;
 }
 
 .btn {
-    @apply pointer-events-auto cursor-pointer bg-primary hover:bg-primary/85 duration-300 text-white p-4 rounded-md
+  @apply bg-primary border-2 border-primary hover:bg-transparent pointer-events-auto cursor-pointer rounded-md p-4 text-white duration-300;
+}
+
+.input {
+  @apply w-full rounded-md bg-primary/15 border border-primary p-4 backdrop-blur-md placeholder:text-zinc-200 hover:bg-transparent duration-300 text-zinc-100;
 }
