@@ -2,6 +2,7 @@ import os
 import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import traceback
 import asyncio
@@ -23,8 +24,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/videos", StaticFiles(directory="videos"), name="videos")
+
 # Keys
-eleven_labs_api_key = os.getenv("ELEVEN_LABS_API_KEY")
+# eleven_labs_api_key = os.getenv("ELEVEN_LABS_API_KEY")
+eleven_labs_api_key = os.getenv("ELEVEN_LABS_API_KE")
 voice_id = "uhYnkYTBc711oAY590Ea"
 
 @app.post("/chat")
@@ -49,25 +53,34 @@ async def chat(req: ChatRequest):
             file_name = f"audios/message_{i}.mp3"
             text_input = message.get("text", "")
 
-            if not text_input:
-                message["audio"] = None
-                continue
+            video = message.get("video_url", "")
+            video_file_name = f"videos/{video}.mp4"
 
             try:
-                elevenlabs_text_to_speech(eleven_labs_api_key, voice_id, file_name, text_input)
+                # Audio
+                # elevenlabs_text_to_speech(eleven_labs_api_key, voice_id, file_name, text_input)
 
-                await asyncio.sleep(0.1)
+                # await asyncio.sleep(0.1)
 
-                if not os.path.exists(file_name):
-                    raise Exception(f"Arquivo {file_name} não encontrado após geração.")
+                # if not os.path.exists(file_name):
+                #     raise Exception(f"Arquivo {file_name} não encontrado após geração.")
 
-                message["audio"] = await audio_file_to_base64(file_name)
-                print(message["audio"])
+                # message["audio"] = await audio_file_to_base64(file_name)
+                # print(message["audio"])
 
-                if message["audio"] is None:
-                    print(f"[ERROR] Falha ao gerar Base64 de {file_name}")
+                # Video
+                os.makedirs("videos", exist_ok=True)
+                
+                if not os.path.exists(video_file_name):
+                    raise Exception(f"Arquivo de vídeo {video_file_name} não encontrado.")
+        
+                message["video_url"] = video_file_name
+
             except Exception as e:
                 message["audio"] = None
+                message["video_url"] = None
+
+        print(messages)
 
         return {"messages": messages}
 

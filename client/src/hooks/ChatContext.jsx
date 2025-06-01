@@ -3,9 +3,11 @@ import { createContext, useEffect, useState } from "react";
 const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
+  const urlApi = 'http://localhost:8000'
+
   const chat = async (message) => {
     setLoading(true);
-    const data = await fetch(`http://localhost:8000/chat`, {
+    const data = await fetch(`${urlApi}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),
@@ -47,6 +49,7 @@ export const ChatProvider = ({ children }) => {
     <ChatContext.Provider
       value={{
         chat,
+        urlApi,
         message,
         onMessagePlayed,
         loading,

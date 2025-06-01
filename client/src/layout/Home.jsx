@@ -1,7 +1,8 @@
 import { Canvas } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "../hooks/useChat";
 import lottie from "lottie-web";
+import { motion } from "framer-motion";
 
 // Components
 import { Experience } from "../components/Experience";
@@ -13,9 +14,9 @@ const Home = () => {
   const animInstance = useRef();
   const input = useRef();
 
-  const { chat, loading, message } = useChat();
+  const { chat, loading, message, urlApi } = useChat();
 
-  console.log(message?.text);
+  console.log(message);
 
   const sendMessage = () => {
     const text = input.current.value;
@@ -72,6 +73,21 @@ const Home = () => {
 
   return (
     <>
+      {message?.video_url ? (
+        <motion.video
+          className="absolute h-full w-full object-cover"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.25 }}
+          transition={{ duration: 5 }}
+          autoPlay
+          muted
+          loop
+        >
+          <source src={`${urlApi}/${message.video_url}`} type="video/mp4" />
+          Seu navegador não suporta o elemento de vídeo.
+        </motion.video>
+      ) : null}
+
       <div className="absolute -z-[1] h-full w-full">
         <Silk
           speed={6}
@@ -94,11 +110,11 @@ const Home = () => {
             delay={120}
             animateBy="words"
             direction="top"
-            className="absolute top-5 -z-[1] mx-auto px-10 text-center text-2xl text-balance text-zinc-100"
+            className="absolute top-5 mx-auto px-10 text-center text-2xl text-balance text-zinc-100"
           />
         )}
 
-        <div className="h-full w-full">
+        <div className="relative z-[1] h-full w-full pe-16">
           <Canvas shadows camera={{ position: [0, 0, 1], fov: 30 }}>
             <Experience />
           </Canvas>

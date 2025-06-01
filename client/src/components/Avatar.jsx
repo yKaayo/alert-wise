@@ -139,9 +139,14 @@ export function Avatar(props) {
 
   useEffect(() => {
     if (materials.Wolf3D_Hair) {
-      materials.Wolf3D_Hair.color.set("#27276d");
+      materials.Wolf3D_Hair.color.set("#27279d");
     }
-  }, [materials.Wolf3D_Hair]);
+
+    if (materials.Wolf3D_Eye) {
+    materials.Wolf3D_Eye.emissive.set("#1c1c62");
+  }
+    
+  }, [materials.Wolf3D_Hair, materials.Wolf3D_Eye]);
 
   const { animations } = useGLTF("/models/animations.glb");
 
