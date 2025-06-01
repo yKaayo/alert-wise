@@ -3,7 +3,8 @@ import { createContext, useEffect, useState } from "react";
 const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
-  const urlApi = 'http://localhost:8000'
+  // const urlApi = 'http://localhost:8000'
+  const urlApi = 'https://alert-wise.onrender.com'
 
   const chat = async (message) => {
     setLoading(true);
