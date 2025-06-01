@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import lottie from "lottie-web";
 import { motion } from "framer-motion";
@@ -15,8 +15,6 @@ const Home = () => {
   const input = useRef();
 
   const { chat, loading, message, urlApi } = useChat();
-
-  console.log(message);
 
   const sendMessage = () => {
     const text = input.current.value;
@@ -114,7 +112,7 @@ const Home = () => {
           />
         )}
 
-        <div className="relative z-[1] h-full w-full pe-16">
+        <div className="relative z-[1] h-full w-full pe-15">
           <Canvas shadows camera={{ position: [0, 0, 1], fov: 30 }}>
             <Experience />
           </Canvas>

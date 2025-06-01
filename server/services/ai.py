@@ -1,12 +1,8 @@
-from openai import OpenAI
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-def get_response_content(user_message):
+def get_response_content(user_message, client):
     system_prompt = """
 You are a storyteller and you will offer to user if they want to start a story
     
@@ -23,8 +19,12 @@ Conflict and overcoming: Show the dangers and difficulties, but also acts of her
 Positive ending: The story should end with hope—survival, reconstruction, lessons learned or a new beginning.
 Tips to make world better: How the user can help the world through of their actions.
 
+In the end of story, bring to user informations that can be useful during the story. An example: prepare high places to climb during flooding.
+
+Important: the tone of the narrative should be empathetic, respectful and inspiring, stimulating reflection, participation and learning of the user.
+
 You will reply ONLY with a valid JSON array, no extra text, no explanations.
-The JSON array contains up to 3 messages.
+
 Each message is an object with keys: text (string), facialExpression (string), animation (string) and videos if necessary to make sense in story (string).
 Example response:
 [
