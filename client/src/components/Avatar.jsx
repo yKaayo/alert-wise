@@ -143,9 +143,8 @@ export function Avatar(props) {
     }
 
     if (materials.Wolf3D_Eye) {
-    materials.Wolf3D_Eye.emissive.set("#1c1c62");
-  }
-    
+      materials.Wolf3D_Eye.emissive.set("#1c1c62");
+    }
   }, [materials.Wolf3D_Hair, materials.Wolf3D_Eye]);
 
   const { animations } = useGLTF("/models/animations.glb");
@@ -187,11 +186,9 @@ export function Avatar(props) {
         );
 
         if (!setupMode) {
-          try {
-            set({
-              [target]: value,
-            });
-          } catch (e) {}
+          set({
+            [target]: value,
+          });
         }
       }
     });

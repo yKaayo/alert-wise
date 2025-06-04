@@ -5,9 +5,9 @@
 }
 
 .btn {
-  @apply bg-primary border-2 border-primary hover:bg-transparent pointer-events-auto cursor-pointer rounded-md p-4 text-white duration-300;
+  @apply bg-primary border-primary pointer-events-auto cursor-pointer rounded-md border-2 p-2 text-white duration-300 hover:bg-transparent md:p-4 text-sm sm:text-base;
 }
 
 .input {
-  @apply w-full rounded-md bg-primary/15 border border-primary p-4 backdrop-blur-md placeholder:text-zinc-200 hover:bg-transparent duration-300 text-zinc-100;
+  @apply bg-primary/15 border-primary w-full rounded-md border p-2 text-zinc-100 backdrop-blur-md duration-300 placeholder:text-zinc-200 hover:bg-transparent md:p-4 text-sm sm:text-base;
 }

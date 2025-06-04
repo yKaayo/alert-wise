@@ -12,18 +12,33 @@ import Silk from "../components/Silk";
 const Home = () => {
   const containerRef = useRef();
   const animInstance = useRef();
-  const input = useRef();
+  const userPrompt = useRef();
 
   const { chat, loading, message, urlApi } = useChat();
 
-  const sendMessage = () => {
-    const text = input.current.value;
-    if (!loading && !message) {
-      chat(text);
-      input.current.value = "";
-    }
-  };
+  console.log(message);
+  
 
+  const choices = message?.choices;
+
+  const audio = new Audio(`data:audio/mp3;base64,${message?.audio}`);
+  audio.addEventListener("loadedmetadata", () => {});
+
+  function sendMessage() {
+    const text = userPrompt.current.value;
+    if (!loading) {
+      chat(text);
+      userPrompt.current.value = "";
+    }
+  }
+
+  function sendChoiceMessage(choice) {
+    if (!loading) {
+      chat(String(choice));
+    }
+  }
+
+  // Lottie
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -59,16 +74,6 @@ const Home = () => {
     };
   }, [loading]);
 
-  useEffect(() => {
-    if (animInstance.current) {
-      if (loading) {
-        animInstance.current.play();
-      } else {
-        animInstance.current.stop();
-      }
-    }
-  }, [loading]);
-
   return (
     <>
       {message?.video_url ? (
@@ -96,7 +101,8 @@ const Home = () => {
         />
       </div>
 
-      <main className="relative flex h-screen flex-col items-center">
+      <main className="relative flex h-dvh flex-col items-center">
+        {/* Text */}
         {loading ? (
           <div
             ref={containerRef}
@@ -108,37 +114,57 @@ const Home = () => {
             delay={120}
             animateBy="words"
             direction="top"
-            className="absolute top-5 mx-auto px-10 text-center text-2xl text-balance text-zinc-100"
+            className="absolute top-5 mx-auto px-10 text-2xl text-balance text-zinc-100"
           />
         )}
 
-        <div className="relative z-[1] h-full w-full pe-15">
-          <Canvas shadows camera={{ position: [0, 0, 1], fov: 30 }}>
+        {/* 3D Model */}
+        <div className="relative z-[1] h-full w-full">
+          <Canvas shadows camera={{ position: [0, 0, 1.2], fov: 30 }}>
             <Experience />
           </Canvas>
         </div>
 
-        <div className="absolute bottom-5 z-[1] w-full">
-          <div className="pointer-events-auto mx-auto flex w-full max-w-screen-sm items-center gap-2">
-            <input
-              className="input"
-              placeholder="Escreva sua mensagem..."
-              ref={input}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  sendMessage();
-                }
-              }}
-            />
-            <button
-              disabled={loading || message}
-              onClick={sendMessage}
-              className={`btn font-bold ${
-                loading || message ? "cursor-not-allowed opacity-30" : ""
-              }`}
-            >
-              ENVIAR
-            </button>
+        {/* Choices */}
+        <div className="absolute bottom-5 z-[1] container mx-auto px-5 sm:px-0">
+          <div className="flex gap-3 md:gap-5">
+            {choices?.length > 0 ? (
+              choices.map((choice, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    sendChoiceMessage(choice);
+                  }}
+                  className={`btn w-full font-bold ${
+                    loading ? "cursor-not-allowed opacity-30" : ""
+                  }`}
+                >
+                  {choice.toUpperCase()}
+                </button>
+              ))
+            ) : (
+              <div className="pointer-events-auto mx-auto flex w-full max-w-screen-sm items-center gap-2">
+                <input
+                  className="input"
+                  placeholder="Escreva sua mensagem..."
+                  ref={userPrompt}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      sendMessage();
+                    }
+                  }}
+                />
+                <button
+                  disabled={loading}
+                  onClick={sendMessage}
+                  className={`btn font-bold ${
+                    loading ? "cursor-not-allowed opacity-30" : ""
+                  }`}
+                >
+                  ENVIAR
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>

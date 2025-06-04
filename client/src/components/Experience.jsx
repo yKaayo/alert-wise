@@ -23,7 +23,7 @@ export const Experience = () => {
     <>
       <CameraControls ref={cameraControls} enabled={false} />
       <Environment preset="sunset" />
-      <group position={[0, -0.9, 0]} scale={[0.6, 0.6, 0.6]}>
+      <group position={[-0.02, -0.86, 0]} scale={[0.6, 0.6, 0.6]}>
         <Avatar />
       </group>
       <ContactShadows opacity={0.7} />

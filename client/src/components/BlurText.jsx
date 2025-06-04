@@ -17,7 +17,7 @@ const buildKeyframes = (from, steps) => {
 const BlurText = ({
   text = "",
   delay = 200,
-  className = "",
+  className = "text-center",
   animateBy = "words",
   direction = "top",
   threshold = 0.1,

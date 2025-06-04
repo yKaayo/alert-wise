@@ -35,3 +35,25 @@ alter table comentario_gs
 alter table comentario_gs
    add constraint fk_publicacao_comentario foreign key ( id_publicacao )
       references publicacao_gs ( id_publicacao )
+
+create table area_risco_gs (
+   id         int primary key not null,
+   endereco   varchar(50) not null,
+   tipo_risco varchar(30) not null,
+   date       datetime not null,
+   id_usuario int
+)
+
+alter table area_risco_gs
+   add constraint fk_usuario_area_risco foreign key ( id_usuario )
+      references usuario_gs ( id_usuario )
+
+create table jogo_gs (
+   id     int primary key not null,
+   pontos int not NULL,
+   id_usuario int
+)
+
+alter table jogo_gs
+   add constraint fk_usuario_jogo foreign key ( id_usuario )
+      references usuario_gs ( id_usuario )

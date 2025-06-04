@@ -6,9 +6,9 @@ os.makedirs("audios", exist_ok=True)
 def generate_speech(client, text, file_path):
     with client.audio.speech.with_streaming_response.create(
       model="gpt-4o-mini-tts",
-      voice="coral",
+      voice="nova",
       input=text,
-      instructions="Talk like a woman that will tell a story",
+      instructions="Speak in a calm and positive tone using portuguese of Brazil.",
   ) as response:
       response.stream_to_file(file_path)
 

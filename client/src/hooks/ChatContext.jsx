@@ -1,50 +1,41 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
-  // const urlApi = 'http://localhost:8000'
+  const [message, setMessage] = useState();
+  const [loading, setLoading] = useState(false);
+
+  // const urlApi = "http://localhost:8000";
   const urlApi = 'https://alert-wise.onrender.com'
 
-  const chat = async (message) => {
+  const chat = async (userPrompt) => {
+    console.log(userPrompt);
+
     setLoading(true);
     const data = await fetch(`${urlApi}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message: userPrompt }),
     });
 
     if (!data.ok) {
-      const err = await data.text();
+      const err = await data.json();
       console.error("Backend error:", err);
       setLoading(false);
       return;
     }
 
     const json = await data.json();
-
     const res = json.messages;
 
-    setMessages((messages) => [...messages, ...res]);
-    
+    setMessage(res[0]);
     setLoading(false);
   };
 
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState();
-  const [loading, setLoading] = useState(false);
-  const [cameraZoomed, setCameraZoomed] = useState(true);
   const onMessagePlayed = () => {
-    setMessages((messages) => messages.slice(1));
+    message;
   };
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      setMessage(messages[0]);
-    } else {
-      setMessage(null);
-    }
-  }, [messages]);
 
   return (
     <ChatContext.Provider
@@ -54,8 +45,6 @@ export const ChatProvider = ({ children }) => {
         message,
         onMessagePlayed,
         loading,
-        cameraZoomed,
-        setCameraZoomed,
       }}
     >
       {children}
