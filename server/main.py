@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 import uuid
 
 # Database
-from services.database import create_user, get_user, verify_user
+from services.database import create_user, get_user
 
 # Schemas
 from schemas import UserCreateUser, GetUser
@@ -21,7 +21,7 @@ from services.ai import get_response_content
 from schemas import ChatRequest
 
 # Utils
-from utils.crypt import crypt_password, decrypt
+from utils.crypt import crypt_password, verify_password
 
 load_dotenv()
 
@@ -46,7 +46,7 @@ session_points = {}
 def signup(user: UserCreateUser):
     hashed_password = crypt_password(user.password)
 
-    if verify_user(user.email):
+    if get_user(user.email):
         raise HTTPException(status_code=409, detail="Usuário já existe")
     
     create_user(name=user.name, email=user.email, password=hashed_password)
@@ -54,20 +54,18 @@ def signup(user: UserCreateUser):
 
 @app.post("/entrar")
 def login(user: GetUser):
-    user_returned = get_user(user.email, user.password)
-    print(user_returned)
+    user_record = get_user(user.email)
 
-    
-
-    if not user_returned:
+    if not user_record:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    
 
-    
-    if not decrypt(user.password, user_returned["senha"]):
+    print(user_record[3])
+    stored_hash = user_record[3]
+
+    if not verify_password(user.password, stored_hash):
         raise HTTPException(status_code=401, detail="Senha incorreta")
     
-    return {"message": "Entrou com sucesso!"}
+    return {"message": "Login bem-sucedido!"}
 
 @app.post("/chat")
 def chat(req: ChatRequest, request: Request):
@@ -82,8 +80,6 @@ def chat(req: ChatRequest, request: Request):
         total_points = session_points[session_id]
 
         conversation_history.append({"role": "user", "content": req.message})
-        
-        print(req.message)
 
         response_content = get_response_content(req.message, client, conversation_history)
         
@@ -96,7 +92,6 @@ def chat(req: ChatRequest, request: Request):
             if "messages" in response_obj:
                 messages = response_obj["messages"]
             else:
-                # Tenta encontrar qualquer chave que contenha array
                 for key, value in response_obj.items():
                     if isinstance(value, list):
                         messages = value
@@ -156,7 +151,6 @@ def chat(req: ChatRequest, request: Request):
         })
         response.set_cookie(key="session_id", value=session_id)
 
-        print(response)
         return response
 
     except Exception as e:

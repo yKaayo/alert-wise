@@ -66,3 +66,5 @@ DROP SEQUENCE id_publicacao;
 -- DROP TABLE comentario_gs;
 -- DROP TABLE publicacao_gs;
 -- DROP TABLE usuario_gs;
+
+SELECT * FROM usuario_gs;

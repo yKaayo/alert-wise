@@ -60,7 +60,6 @@ Translate to pt-BR
         if entry["role"] == "user":
             messages.append({"role": "user", "content": entry["content"]})
         elif entry["role"] == "assistant":
-            # Adicione apenas o texto das mensagens anteriores da IA
             try:
                 response_obj = json.loads(entry["content"])
                 if "messages" in response_obj:

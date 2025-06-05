@@ -6,5 +6,5 @@ def crypt_password(password: str):
     hashed_password = pwd_context.hash(password)
     return hashed_password
 
-def decrypt(password: str, hashed_password: str):
+def verify_password(password: str, hashed_password: str) -> bool:
     return pwd_context.verify(password, hashed_password)
