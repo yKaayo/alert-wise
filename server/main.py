@@ -6,13 +6,23 @@ from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import traceback
 from openai import OpenAI
+from fastapi.responses import JSONResponse
 import uuid
+
+# Database
+from services.database import create_user, get_user, verify_user
+
+# Schemas
+from schemas import UserCreateUser, GetUser
 
 # Files
 from services.audio import audio_file_to_base64, generate_speech
 from services.ai import get_response_content
 from schemas import ChatRequest
 
+# Utils
+from utils.crypt import crypt_password, decrypt
+
 load_dotenv()
 
 app = FastAPI()
@@ -24,44 +34,43 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.mount("/videos", StaticFiles(directory="videos"), name="videos")
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-import os
-import json
-import uuid
-import traceback
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
-from dotenv import load_dotenv
-from openai import OpenAI
-
-load_dotenv()
-
-app = FastAPI()
-
-# Middleware CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 app.mount("/videos", StaticFiles(directory="videos"), name="videos")
 
 session_histories = {}
 session_points = {}
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+@app.post("/cadastrar")
+def signup(user: UserCreateUser):
+    hashed_password = crypt_password(user.password)
+
+    if verify_user(user.email):
+        raise HTTPException(status_code=409, detail="Usuário já existe")
+    
+    create_user(name=user.name, email=user.email, password=hashed_password)
+    return {"messages": "Usuário registrado com sucesso"}
+
+@app.post("/entrar")
+def login(user: GetUser):
+    user_returned = get_user(user.email, user.password)
+    print(user_returned)
+
+    
+
+    if not user_returned:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+
+    
+    if not decrypt(user.password, user_returned["senha"]):
+        raise HTTPException(status_code=401, detail="Senha incorreta")
+    
+    return {"message": "Entrou com sucesso!"}
 
 @app.post("/chat")
-async def chat(req: ChatRequest, request: Request):
+def chat(req: ChatRequest, request: Request):
     try:
         session_id = request.cookies.get('session_id') or str(uuid.uuid4())
         
