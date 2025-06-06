@@ -2,9 +2,6 @@ import oracledb
 from dotenv import load_dotenv
 import os
 
-# Utils
-from utils.crypt import crypt_password
-
 load_dotenv()
 
 dsn = oracledb.makedsn("oracle.fiap.com.br", 1521, service_name="ORCL")

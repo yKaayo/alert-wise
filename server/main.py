@@ -9,7 +9,7 @@ from openai import OpenAI
 from fastapi.responses import JSONResponse
 
 # Database
-from services.database import create_user, get_user, add_user_points, create_post, get_posts, delete_post
+from services.database import create_user, get_user, add_user_points, get_posts, delete_post
 
 # Schemas
 from schemas import UserCreateUser, GetUser, CreatePost
