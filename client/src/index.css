@@ -5,9 +5,17 @@
 }
 
 .btn {
-  @apply bg-primary border-primary pointer-events-auto cursor-pointer rounded-md border-2 p-2 text-white duration-300 hover:bg-transparent md:p-4 text-sm sm:text-base;
+  @apply bg-primary border-primary pointer-events-auto cursor-pointer rounded-md border-2 p-2 text-sm text-white duration-300 hover:bg-transparent sm:text-base md:p-4;
 }
 
 .input {
-  @apply bg-primary/15 border-primary w-full rounded-md border p-2 text-zinc-100 backdrop-blur-md duration-300 placeholder:text-zinc-200 hover:bg-transparent md:p-4 text-sm sm:text-base;
+  @apply bg-primary/15 border-primary w-full rounded-md border p-2 text-sm text-zinc-100 backdrop-blur-md duration-300 placeholder:text-zinc-200 hover:bg-transparent sm:text-base md:p-4;
+}
+
+.auth-input {
+  @apply border-primary focus:ring-primary/80 w-full rounded-2xl border bg-gray-50/50 py-2 pr-4 pl-12 transition-all duration-300 hover:bg-gray-50 focus:border-transparent focus:ring-2 focus:outline-none;
+}
+
+.auth-btn {
+  @apply from-primary to-primary/75 flex w-full transform cursor-pointer items-center justify-center space-x-2 rounded-2xl bg-gradient-to-r py-3 font-semibold text-white transition-all duration-200 hover:scale-[1.02] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50;
 }

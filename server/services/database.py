@@ -26,3 +26,13 @@ def create_user(name: str, email: str, password: str):
     """, [name, email, password])
     conn.commit()
     cursor.close()
+
+def add_user_points(points: int, user_id: int):
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO jogo_gs (id, pontos, id_usuario) 
+        VALUES ( id_jogo.nextval, points, user_id )
+        """, [points, user_id])
+    conn.commit()
+    cursor.close()
+    print(points, user_id)

@@ -5,17 +5,23 @@ const ChatContext = createContext();
 export const ChatProvider = ({ children }) => {
   const [message, setMessage] = useState();
   const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState({ id: "", email: "" });
 
-  // const urlApi = "http://localhost:8000";
-  const urlApi = 'https://alert-wise.onrender.com'
+  const urlApi = "http://localhost:8000";
+  // const urlApi = 'https://alert-wise.onrender.com'
 
   const chat = async (userPrompt) => {
     console.log(userPrompt);
+    console.log(userData);
 
     setLoading(true);
     const data = await fetch(`${urlApi}/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "user-id": userData.id,
+        "user-email": userData.email,
+      },
       body: JSON.stringify({ message: userPrompt }),
     });
 
@@ -45,6 +51,7 @@ export const ChatProvider = ({ children }) => {
         message,
         onMessagePlayed,
         loading,
+        setUserData,
       }}
     >
       {children}

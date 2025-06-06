@@ -1,16 +1,15 @@
 import os
 import json
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import traceback
 from openai import OpenAI
 from fastapi.responses import JSONResponse
-import uuid
 
 # Database
-from services.database import create_user, get_user
+from services.database import create_user, get_user, add_user_points
 
 # Schemas
 from schemas import UserCreateUser, GetUser
@@ -22,6 +21,7 @@ from schemas import ChatRequest
 
 # Utils
 from utils.crypt import crypt_password, verify_password
+from utils.session import get_current_user
 
 load_dotenv()
 
@@ -38,9 +38,6 @@ app.add_middleware(
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 app.mount("/videos", StaticFiles(directory="videos"), name="videos")
-
-session_histories = {}
-session_points = {}
 
 @app.post("/cadastrar")
 def signup(user: UserCreateUser):
@@ -59,25 +56,27 @@ def login(user: GetUser):
     if not user_record:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-    print(user_record[3])
     stored_hash = user_record[3]
 
     if not verify_password(user.password, stored_hash):
         raise HTTPException(status_code=401, detail="Senha incorreta")
     
-    return {"message": "Login bem-sucedido!"}
+    return {"message": "Login bem-sucedido!", "login": True, "user_id": user_record[0], "user_email": user_record[2]}
 
+session_histories = {}
+session_points = {}
 @app.post("/chat")
-def chat(req: ChatRequest, request: Request):
+async def chat(req: ChatRequest, current_user: dict = Depends(get_current_user)):
     try:
-        session_id = request.cookies.get('session_id') or str(uuid.uuid4())
+        user_id = current_user[0]
+        user_identifier = f"user_{user_id}"
         
-        if session_id not in session_histories:
-            session_histories[session_id] = []
-            session_points[session_id] = 0
+        if user_identifier not in session_histories:
+            session_histories[user_identifier] = []
+            session_points[user_identifier] = 0
             
-        conversation_history = session_histories[session_id]
-        total_points = session_points[session_id]
+        conversation_history = session_histories[user_identifier]
+        total_points = session_points[user_identifier]
 
         conversation_history.append({"role": "user", "content": req.message})
 
@@ -108,34 +107,34 @@ def chat(req: ChatRequest, request: Request):
             "role": "assistant",
             "content": response_content
         })
-        print(response_content)
 
         # Points
         for message in messages:
             points = message.get("points", 0)
-
-            if points:
+            
+            if isinstance(points, (int)) and points > 0:
                 total_points += points
-
-            session_points[session_id] = total_points
+                add_user_points(points, user_id)
+            
+            session_points[user_identifier] = total_points
             message["total_points"] = total_points
 
         # Audio
-        # for i, message in enumerate(messages):
-        #     file_path = f"audios/audio.mp3"
-        #     text_input = message.get("text", "")
+        for i, message in enumerate(messages):
+            file_path = f"audios/audio.mp3"
+            text_input = message.get("text", "")
 
-        #     try:
-        #         generate_speech(client, text_input, file_path)
+            try:
+                generate_speech(client, text_input, file_path)
 
-        #         if not os.path.exists(file_path):
-        #             raise Exception(f"Arquivo {file_path} não encontrado após geração.")
+                if not os.path.exists(file_path):
+                    raise Exception(f"Arquivo {file_path} não encontrado após geração.")
 
-        #         message["audio"] = await audio_file_to_base64(file_path)
-        #         print(message["audio"])
+                message["audio"] = await audio_file_to_base64(file_path)
+                print(message["audio"])
 
-        #     except Exception as e:
-        #         message["audio"] = None
+            except Exception as e:
+                message["audio"] = None
 
         # Vídeos
         for message in messages:
@@ -143,16 +142,17 @@ def chat(req: ChatRequest, request: Request):
             if video:
                 message["video_url"] = f"videos/{video}.mp4"
 
-        session_histories[session_id] = conversation_history
+        session_histories[user_identifier] = conversation_history
 
         response = JSONResponse({
-            "session_id": session_id,
+            "user_id": user_id,
+            "user_email": req.user_email,
             "messages": messages
         })
-        response.set_cookie(key="session_id", value=session_id)
 
         return response
 
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+    
