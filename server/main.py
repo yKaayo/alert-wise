@@ -9,10 +9,10 @@ from openai import OpenAI
 from fastapi.responses import JSONResponse
 
 # Database
-from services.database import create_user, get_user, add_user_points, get_posts, delete_post
+from services.database import create_user, get_user, add_user_points, get_posts, delete_post, update_post, create_post
 
 # Schemas
-from schemas import UserCreateUser, GetUser, CreatePost
+from schemas import UserCreateUser, GetUser, CreatePost, UpdatePost
 
 # Files
 from services.audio import audio_file_to_base64, generate_speech
@@ -79,17 +79,7 @@ def create_report(post: CreatePost):
         raise HTTPException(status_code=401, detail="Usuário não autenticado")
     
     user_id = user_record["user_id"]
-    
-    # report = get_posts(
-    #     name=post.name,
-    #     email=post.email,
-    #     password=crypt_password(post.password),
-    #     content=post.content,
-    #     date_published=post.date_published
-    # )
-    
-    # if not report:
-    #     raise HTTPException(status_code=500, detail="Erro ao criar relato")
+    create_post(content=post.content, user_id=user_id)
     
     return {"message": "Relato criado com sucesso!"}
 
@@ -103,7 +93,8 @@ def delete_report(post_id: int):
     return {"message": "Relato deletado com sucesso!"}
 
 @app.put("/relato")
-def update_report(post: CreatePost):
+def update_report(post: UpdatePost):
+    update_post(post_id=post.id, content=post.content)
     
     return {"message": "Rota de atualização de relatos ainda não implementada"}
 

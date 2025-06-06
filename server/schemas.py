@@ -20,4 +20,7 @@ class CreatePost(BaseModel):
     email: str
     password: str
     content: str
-    date_published: str
+    
+class UpdatePost(BaseModel):
+    id: int
+    content: str

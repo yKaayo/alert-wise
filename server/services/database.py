@@ -66,3 +66,13 @@ def delete_post(post_id: int):
     cursor.close()
         
     return True
+
+def update_post(post_id: int, content: str):
+    cursor = conn.cursor()
+    cursor.execute("""
+        
+    """, [])
+    conn.commit()
+    cursor.close()
+        
+    return True
