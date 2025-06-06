@@ -50,7 +50,7 @@ def create_post(content: str, user_id: int):
 def get_posts():
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT usuario_gs.nome, publicacao_gs.conteudo, publicacao_gs.data_publicacao FROM usuario_gs
+        SELECT publicacao_gs.id, usuario_gs.nome, publicacao_gs.conteudo, publicacao_gs.data_publicacao FROM usuario_gs
         LEFT JOIN publicacao_gs ON usuario_gs.id = publicacao_gs.id_usuario
     """)
     result = cursor.fetchall()
@@ -58,3 +58,14 @@ def get_posts():
     cursor.close()
     
     return result
+
+def delete_post(post_id: int):
+    cursor = conn.cursor()
+    cursor.execute("""
+        DELETE FROM publicacao_gs
+        WHERE publicacao_gs.id = :post_id
+    """, [post_id])
+    conn.commit()
+    cursor.close()
+    
+    return True

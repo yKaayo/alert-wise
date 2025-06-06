@@ -9,7 +9,7 @@ from openai import OpenAI
 from fastapi.responses import JSONResponse
 
 # Database
-from services.database import create_user, get_user, add_user_points, create_post, get_posts
+from services.database import create_user, get_user, add_user_points, create_post, get_posts, delete_post
 
 # Schemas
 from schemas import UserCreateUser, GetUser, CreatePost
@@ -92,6 +92,15 @@ def get_reports():
         raise HTTPException(status_code=500, detail="Erro ao buscar os relatos!")
     
     return reports
+
+@app.delete("/relato")
+def delete_report(post_id: int):
+    report = delete_post(post_id)
+    
+    if not report:
+        raise HTTPException(status_code=500, detail="Erro ao deletar o relato")
+    
+    return {"message": "Relato deletado com sucesso!"}
 
 session_histories = {}
 session_points = {}

@@ -91,34 +91,36 @@ insert into jogo_gs (id, pontos, id_usuario) values ( id_jogo.nextval, 2, 4 ); c
 insert into jogo_gs (id, pontos, id_usuario) values ( id_jogo.nextval, 3, 5 ); commit;
 
 -- Querys
--- 1. Listar as publicações com o nome, conteúdo e data de publicação ordenando pela data mais recente.
+-- 1. Listar as publicações com o nome, conteúdo e data de publicação ordenando pela data mais recente
 SELECT usuario_gs.nome as Nome, publicacao_gs.conteudo as Texto, publicacao_gs.data_publicacao as Data_De_Publicacao FROM usuario_gs
 LEFT JOIN publicacao_gs ON usuario_gs.id = publicacao_gs.id_usuario
 ORDER BY publicacao_gs.data_publicacao DESC;
 
--- 2. Listar os usuários com o nome, email e a quantidade total de pontos no jogo e ordenando por quem tem mais pontos.
+-- 2. Listar os usuários com o nome, email e a quantidade total de pontos no jogo e ordenando por quem tem mais pontos
 select usuario_gs.nome AS Usuarios, usuario_gs.email AS Email, SUM(jogo_gs.pontos) AS Pontos_Totais
 from usuario_gs
 LEFT JOIN jogo_gs ON usuario_gs.id = jogo_gs.id_usuario
 GROUP BY usuario_gs.id, usuario_gs.nome, usuario_gs.email
 ORDER BY 3 DESC;
 
--- 3. Listar as publicações com o nome do autor, conteúdo e a quantidade total de comentários, ordenando pela quantidade de comentários.
-SELECT usuario_gs.nome AS autor, p.conteudo AS publicacao, 
-       COUNT(c.id) AS total_comentarios
-FROM publicacao_gs p
-JOIN usuario_gs ON p.id_usuario = u.id
-LEFT JOIN comentario_gs c ON p.id = c.id_publicacao
-GROUP BY u.nome, p.conteudo
+-- 3. Listar as publicações com o nome do autor, conteúdo e a quantidade total de comentários, ordenando pela quantidade de comentários
+SELECT usuario_gs.nome AS Autor, publicacao_gs.conteudo AS Publicacao, 
+       COUNT(comentario_gs.id) AS Total_Comentarios
+FROM publicacao_gs
+JOIN usuario_gs ON publicacao_gs.id_usuario = usuario_gs.id
+LEFT JOIN comentario_gs ON publicacao_gs.id = comentario_gs.id_publicacao
+GROUP BY usuario_gs.nome, publicacao_gs.conteudo
 ORDER BY total_comentarios DESC;
 
--- 2. Listar os usuários com o nome, email e a quantidade total de pontos no jogo e ordenando por quem tem mais pontos.
-select usuario_gs.nome AS Usuarios, usuario_gs.email AS Email, SUM(jogo_gs.pontos) AS Pontos_Totais
-from usuario_gs
-LEFT JOIN jogo_gs ON usuario_gs.id = jogo_gs.id_usuario
-GROUP BY usuario_gs.id, usuario_gs.nome, usuario_gs.email
-ORDER BY 3 DESC;
+-- 4. Calcula a média de pontos dos usuários em um jogo e filtrando apenas aqueles com média superior a 1 pontos
+SELECT usuario_gs.nome AS Nome, AVG(jogo_gs.pontos) AS Media_De_Pontos
+FROM jogo_gs
+JOIN usuario_gs ON jogo_gs.id_usuario = usuario_gs.id
+GROUP BY usuario_gs.nome
+HAVING AVG(jogo_gs.pontos) > 1
+ORDER BY Media_De_Pontos DESC;
 
+-- 5. Listar todos
 
 
 drop sequence id_usuario;
