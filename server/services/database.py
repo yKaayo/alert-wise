@@ -64,5 +64,5 @@ def delete_post(post_id: int):
     """, [post_id])
     conn.commit()
     cursor.close()
-    
+        
     return True

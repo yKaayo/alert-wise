@@ -75,8 +75,7 @@ insert into publicacao_gs (
    data_publicacao,
    id_usuario
 ) values ( id_publicacao.nextval,
-           'Terremoto de 6.7 graus atingiu o norte do Chile hoje de madrugada. Até o momento foram registrados danos em edificações antigas, mas sem vítimas fatais.'
-           ,
+           'Terremoto de 6.7 graus atingiu o norte do Chile hoje de madrugada. Até o momento foram registrados danos em edificações antigas.',
            current_date,
            2 );
 
@@ -143,7 +142,7 @@ insert into comentario_gs (
            'Parabéns pela pontuação alta! Alguma dica para melhorar meu desempenho?',
            current_date,
            2,
-           2 );
+           1 );
 
 commit;
 insert into comentario_gs (

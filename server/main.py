@@ -63,6 +63,15 @@ def login(user: GetUser):
     
     return {"message": "Login bem-sucedido!", "login": True, "user_id": user_record[0], "user_email": user_record[2]}
 
+@app.get("/relatos")
+def get_reports():
+    reports = get_posts()
+    
+    if not reports:
+        raise HTTPException(status_code=500, detail="Erro ao buscar os relatos!")
+    
+    return reports
+
 @app.post("/relato")
 def create_report(post: CreatePost):
     user_record = login(user=GetUser(email=post.email, password=post.password))
@@ -84,15 +93,6 @@ def create_report(post: CreatePost):
     
     return {"message": "Relato criado com sucesso!"}
 
-@app.get("/relatos")
-def get_reports():
-    reports = get_posts()
-    
-    if not reports:
-        raise HTTPException(status_code=500, detail="Erro ao buscar os relatos!")
-    
-    return reports
-
 @app.delete("/relato")
 def delete_report(post_id: int):
     report = delete_post(post_id)
@@ -101,6 +101,11 @@ def delete_report(post_id: int):
         raise HTTPException(status_code=500, detail="Erro ao deletar o relato")
     
     return {"message": "Relato deletado com sucesso!"}
+
+@app.put("/relato")
+def update_report(post: CreatePost):
+    
+    return {"message": "Rota de atualização de relatos ainda não implementada"}
 
 session_histories = {}
 session_points = {}
