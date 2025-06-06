@@ -111,6 +111,7 @@ async def chat(req: ChatRequest, current_user: dict = Depends(get_current_user))
         # Points
         for message in messages:
             points = message.get("points", 0)
+            print(points)
             
             if isinstance(points, (int)) and points > 0:
                 total_points += points
