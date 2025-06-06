@@ -9,10 +9,10 @@ from openai import OpenAI
 from fastapi.responses import JSONResponse
 
 # Database
-from services.database import create_user, get_user, add_user_points
+from services.database import create_user, get_user, add_user_points, create_post
 
 # Schemas
-from schemas import UserCreateUser, GetUser
+from schemas import UserCreateUser, GetUser, CreatePost
 
 # Files
 from services.audio import audio_file_to_base64, generate_speech
@@ -62,6 +62,22 @@ def login(user: GetUser):
         raise HTTPException(status_code=401, detail="Senha incorreta")
     
     return {"message": "Login bem-sucedido!", "login": True, "user_id": user_record[0], "user_email": user_record[2]}
+
+@app.post("/relato")
+def create_report(post: CreatePost):
+    report = create_post(
+        name=post.name,
+        email=post.email,
+        password=crypt_password(post.password),
+        title=post.title,
+        content=post.content,
+        date_published=post.date_published
+    )
+    
+    if not report:
+        raise HTTPException(status_code=500, detail="Erro ao criar relato")
+    
+    return {"message": "Relato criado com sucesso!"}
 
 session_histories = {}
 session_points = {}
@@ -132,7 +148,6 @@ async def chat(req: ChatRequest, current_user: dict = Depends(get_current_user))
                     raise Exception(f"Arquivo {file_path} não encontrado após geração.")
 
                 message["audio"] = await audio_file_to_base64(file_path)
-                print(message["audio"])
 
             except Exception as e:
                 message["audio"] = None
@@ -143,6 +158,7 @@ async def chat(req: ChatRequest, current_user: dict = Depends(get_current_user))
             if video:
                 message["video_url"] = f"videos/{video}.mp4"
 
+        print(conversation_history)
         session_histories[user_identifier] = conversation_history
 
         response = JSONResponse({

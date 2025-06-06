@@ -7,13 +7,10 @@ export const ChatProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState({ id: "", email: "" });
 
-  // const urlApi = "http://localhost:8000";
-  const urlApi = 'https://alert-wise.onrender.com'
+  const urlApi = "http://localhost:8000";
+  // const urlApi = 'https://alert-wise.onrender.com'
 
   const chat = async (userPrompt) => {
-    console.log(userPrompt);
-    console.log(userData);
-
     setLoading(true);
     const data = await fetch(`${urlApi}/chat`, {
       method: "POST",

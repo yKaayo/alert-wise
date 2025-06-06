@@ -14,3 +14,11 @@ class UserCreateUser(BaseModel):
     name: str
     email: str
     password: str
+    
+class CreatePost(BaseModel):
+    name: str
+    email: str
+    password: str
+    title: str
+    content: str
+    date_published: str

@@ -31,8 +31,19 @@ def add_user_points(points: int, user_id: int):
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO jogo_gs (id, pontos, id_usuario) 
-        VALUES ( id_jogo.nextval, points, user_id )
+        VALUES ( id_jogo.nextval, :points, :user_id )
         """, [points, user_id])
     conn.commit()
     cursor.close()
-    print(points, user_id)
+    
+def create_post(name: str, email: str, password: str, title: str, content: str, date_published: str):
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO publicacao_gs (id, titulo, conteudo, data_publicacao, id_usuario)
+        VALUES (id_publicacao.nextval, :title, :content, TO_DATE(:date_published, 'DD/MM/YYYY'), :title, :content, )
+    """, [name, email, password, title, content, date_published])
+    conn.commit()
+    cursor.close()
+    
+    return True
+    

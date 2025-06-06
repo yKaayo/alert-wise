@@ -62,13 +62,38 @@ Translate to pt-BR
         elif entry["role"] == "assistant":
             try:
                 response_obj = json.loads(entry["content"])
+                
                 if "messages" in response_obj:
+                    assistant_summary = []
                     for msg in response_obj["messages"]:
-                        messages.append({
-                            "role": "assistant",
-                            "content": msg.get("text", "")
-                        })
-            except:
+                        summary_parts = []
+                        
+                        if msg.get("text"):
+                            summary_parts.append(f"Narração: {msg['text']}")
+                        
+                        if msg.get("choices"):
+                            choices_text = ", ".join(msg["choices"])
+                            summary_parts.append(f"Escolhas oferecidas: {choices_text}")
+                        
+                        if msg.get("points"):
+                            summary_parts.append(f"Pontos dados: {msg['points']}")
+                        
+                        if msg.get("facialExpression"):
+                            summary_parts.append(f"Estado: {msg['facialExpression']}")
+                        
+                        assistant_summary.append(" | ".join(summary_parts))
+                    
+                    messages.append({
+                        "role": "assistant",
+                        "content": " || ".join(assistant_summary)
+                    })
+                else:
+                    messages.append({
+                        "role": "assistant",
+                        "content": entry["content"][:500]
+                    })
+                    
+            except json.JSONDecodeError:
                 messages.append({
                     "role": "assistant",
                     "content": entry["content"][:500]
