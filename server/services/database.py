@@ -37,7 +37,7 @@ def create_post(content: str, user_id: int):
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO publicacao_gs (id, conteudo, data_publicacao, id_usuario)
-        VALUES (id_publicacao.nextval, :content, null, :user_id )
+        VALUES (id_publicacao.nextval, :content, SYSDATE, :user_id )
     """, [content, user_id])
     conn.commit()
     cursor.close()
