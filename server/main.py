@@ -9,7 +9,7 @@ from openai import OpenAI
 from fastapi.responses import JSONResponse
 
 # Database
-from services.database import create_user, get_user, add_user_points, create_post
+from services.database import create_user, get_user, add_user_points, create_post, get_posts
 
 # Schemas
 from schemas import UserCreateUser, GetUser, CreatePost
@@ -65,19 +65,33 @@ def login(user: GetUser):
 
 @app.post("/relato")
 def create_report(post: CreatePost):
-    report = create_post(
-        name=post.name,
-        email=post.email,
-        password=crypt_password(post.password),
-        title=post.title,
-        content=post.content,
-        date_published=post.date_published
-    )
+    user_record = login(user=GetUser(email=post.email, password=post.password))
+    if user_record["login"] is False:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado")
     
-    if not report:
-        raise HTTPException(status_code=500, detail="Erro ao criar relato")
+    user_id = user_record["user_id"]
+    
+    # report = get_posts(
+    #     name=post.name,
+    #     email=post.email,
+    #     password=crypt_password(post.password),
+    #     content=post.content,
+    #     date_published=post.date_published
+    # )
+    
+    # if not report:
+    #     raise HTTPException(status_code=500, detail="Erro ao criar relato")
     
     return {"message": "Relato criado com sucesso!"}
+
+@app.get("/relatos")
+def get_reports():
+    reports = get_posts()
+    
+    if not reports:
+        raise HTTPException(status_code=500, detail="Erro ao buscar os relatos!")
+    
+    return reports
 
 session_histories = {}
 session_points = {}

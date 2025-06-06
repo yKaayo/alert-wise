@@ -36,14 +36,25 @@ def add_user_points(points: int, user_id: int):
     conn.commit()
     cursor.close()
     
-def create_post(name: str, email: str, password: str, title: str, content: str, date_published: str):
+def create_post(content: str, user_id: int):
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO publicacao_gs (id, titulo, conteudo, data_publicacao, id_usuario)
-        VALUES (id_publicacao.nextval, :title, :content, TO_DATE(:date_published, 'DD/MM/YYYY'), :title, :content, )
-    """, [name, email, password, title, content, date_published])
+        INSERT INTO publicacao_gs (id, conteudo, data_publicacao, id_usuario)
+        VALUES (id_publicacao.nextval, :content, null, :user_id )
+    """, [content, user_id])
     conn.commit()
     cursor.close()
     
     return True
+
+def get_posts():
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT usuario_gs.nome, publicacao_gs.conteudo, publicacao_gs.data_publicacao FROM usuario_gs
+        LEFT JOIN publicacao_gs ON usuario_gs.id = publicacao_gs.id_usuario
+    """)
+    result = cursor.fetchall()
+    conn.commit()
+    cursor.close()
     
+    return result
