@@ -94,7 +94,10 @@ def delete_report(post_id: int):
 
 @app.put("/relato")
 def update_report(post: UpdatePost):
-    update_post(post_id=post.id, content=post.content)
+    post_updated = update_post(post_id=post.id, content=post.content)
+    
+    if not post_updated:
+        raise HTTPException(status_code=500, detail="Erro ao atualizar o relato")
     
     return {"message": "Rota de atualização de relatos ainda não implementada"}
 

@@ -70,8 +70,9 @@ def delete_post(post_id: int):
 def update_post(post_id: int, content: str):
     cursor = conn.cursor()
     cursor.execute("""
-        
-    """, [])
+        UPDATE publicacao_gs set conteudo = :content
+        WHERE publicacao_gs.id = :post_id
+    """, [content, post_id])
     conn.commit()
     cursor.close()
         
